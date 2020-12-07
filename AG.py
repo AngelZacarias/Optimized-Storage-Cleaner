@@ -39,6 +39,7 @@ class AG:
             if generacion % 100 == 0:
                 print("Generación: ", generacion, 'Mejor Histórico: ', self._mejor_historico._cromosoma, self._mejor_historico._fitness)
             generacion += 1
+        return self._mejor_historico._cromosoma
 
     def crearIndividuos(self):
         for i in range(self._cantidad_individuos):
@@ -48,7 +49,7 @@ class AG:
 
     def evaluaIndividuos(self):
         for i in self._individuos:
-            i._fitness = self._problema.f(self._tamano_gen, i._cromosoma)
+            i._fitness = self._problema.f(i._cromosoma)
             if i._fitness > self._mejor_historico._fitness:
                 self._mejor_historico = copy.deepcopy(i)
 

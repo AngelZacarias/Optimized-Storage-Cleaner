@@ -1,6 +1,7 @@
 import os
 import ArchivosExp
 import AG
+import DO
 
 def main():
     metodo = ''
@@ -10,9 +11,9 @@ def main():
     tamanioDeseado = 0
     
     #Obtenemos los parametros del problema
-    print("Optimizador de Limpiador de Archivos")
-    
-    ruta = input("Ingrese el directorio a analizar (C:\\Users\\user\\Desktop\\folder):")
+    print(":::::::: Optimizador de Limpiador de Archivos ::::::::")
+    print('')
+    ruta = input("Ingrese el directorio a analizar (C:\\Users\\user\\Desktop\\folder): ")
     if os.path.exists(ruta)==False:
         print("El directorio especificado no existe")
     else:
@@ -26,43 +27,72 @@ def main():
             archivos.append(archivo)
             pesos.append(t)
             tamanioActual += t
-        tamanioActual=tamanioActual/1024/1024
+        print('')
         print("El directorio contiene ",len(archivos)," archivos")
-        print("El directorio actual tiene archivos equivalentes a ",tamanioActual,"(MB)")
-        tamanioDeseado = float(input("Ingrese el tamanio final deseado (MB):"))
-        tamanioDeseado=tamanioDeseado*1024*1024
-        directorio = ArchivosExp.archivosExp(archivos, pesos, tamanioDeseado)
+        print("El directorio actual tiene archivos equivalentes a ",tamanioActual/1024/1024,"(MB)")
         
-        metodo=input("Ingrese el metodo a utilizar:")
+        print('')
+        tamanioDeseado = float(input("Ingrese el tamanio final deseado (MB): "))
+        tamanioDeseado=tamanioDeseado*1024*1024
+        
+        #Clase problema, archivos tiene los nombres de la ruta y pesos su tamaño
+        directorio = ArchivosExp.archivosExp(archivos, pesos, tamanioDeseado)
+        print('')
+        print("Seleccione el metodo de resolución:")
+        print("-Genetico")
+        print("-Enjambre")
+        print("-Diferencial")
+        metodo=input("Ingrese el metodo a utilizar: ")
         
         #Ejecuta Algoritmo Evolutivo
+        solucion = []
         if(metodo=='Genetico'):
-            genetico(len(archivos),directorio)
+            solucion = genetico(len(archivos),directorio)
         elif(metodo =='Diferencial'):
-            diferencial()
+            solucion = diferencial(len(archivos),directorio)
         elif(metodo=='Enjambre'):
-            enjambreParticulas()
+            solucion = enjambreParticulas()
         else:
             print('Metodo no soportado')
             
         #Mostramos el peso final alcanzado y que archivos eliminar
-    
+        tamanioAlcanzado = 0
+        numSeleccionados = 0
+        print('')
+        print('::::::::::: Resultados :::::::::::')
+        print("Debera eliminar los siguientes archivos:")
+        print('')
+        for idx in range(len(solucion)):
+            if solucion[idx]:
+                tamanioAlcanzado += pesos[idx]
+                numSeleccionados += 1
+                print(archivos[idx])
+        print('')
+        print("Posible peso final: ",round((tamanioActual - tamanioAlcanzado)/1024/1024,2),'MB')
+        print("Total de archivos necesarios a eliminar: ", numSeleccionados)
     
 def genetico(numAlelos, directorio):
     # :::::::::::::::::::::: Algoritmo Genetico ::::::::::::::::::::::::::
     alelos = numAlelos
-    individuos = 32
-    tamano_gen = 1 #cada bit representa a un artículo de la mochila
+    individuos = 50
+    tamano_gen = 1 #cada bit representa s
     generaciones = 2000
     factor_mutacion = 0.01
     ag = AG.AG(individuos, alelos, tamano_gen, generaciones, factor_mutacion, directorio)
-    ag.run()
+    return ag.run()
 
 def enjambreParticulas():
     print('In progress...')
     
-def diferencial():
-    print('In progress...')
+def diferencial(numDimensiones, directorio):
+    # :::::::::::::::::::::: Algoritmo Diferencial ::::::::::::::::::::::::::
+    individuos = 50
+    dimensiones = numDimensiones
+    F = 0.5 #E[0.4,0.9]
+    c = 0.85#E[0.1,1]
+    generaciones = 2000
+    ad = DO.DO(individuos, dimensiones, F, c, directorio,generaciones)
+    return ad.run()
 
 if __name__ == '__main__':
     main()

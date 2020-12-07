@@ -4,7 +4,7 @@ class archivosExp:
         self._tamanio = tamanio
         self._pesos = pesos
 
-    def f(self, tamano_gen, cromosoma):
+    def f(self,cromosoma):
         f = 0
         for i in range(len(cromosoma)):
             if cromosoma[i]:
