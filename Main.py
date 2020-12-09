@@ -2,6 +2,7 @@ import os
 import ArchivosExp
 import AG
 import DO
+import PSO
 
 def main():
     metodo = ''
@@ -32,7 +33,7 @@ def main():
         print("El directorio actual tiene archivos equivalentes a ",tamanioActual/1024/1024,"(MB)")
         
         print('')
-        tamanioDeseado = float(input("Ingrese el tamanio final deseado (MB): "))
+        tamanioDeseado = float(input("Ingrese el tamanio que desea liberar (MB): "))
         tamanioDeseado=tamanioDeseado*1024*1024
         
         #Clase problema, archivos tiene los nombres de la ruta y pesos su tamaño
@@ -51,7 +52,7 @@ def main():
         elif(metodo =='Diferencial'):
             solucion = diferencial(len(archivos),directorio)
         elif(metodo=='Enjambre'):
-            solucion = enjambreParticulas()
+            solucion = enjambreParticulas(len(archivos),directorio)
         else:
             print('Metodo no soportado')
             
@@ -68,8 +69,11 @@ def main():
                 numSeleccionados += 1
                 print(archivos[idx])
         print('')
-        print("Posible peso final: ",round((tamanioActual - tamanioAlcanzado)/1024/1024,2),'MB')
         print("Total de archivos necesarios a eliminar: ", numSeleccionados)
+        print("El tamaño actual es: ",round(tamanioActual/1024/1024,2))
+        print("El tamaño total de los archivos seleccionados es: ", round(tamanioAlcanzado / 1024 / 1024, 2))
+        print("Posible peso final: ",round((tamanioActual - tamanioAlcanzado)/1024/1024,2),'MB')
+
     
 def genetico(numAlelos, directorio):
     # :::::::::::::::::::::: Algoritmo Genetico ::::::::::::::::::::::::::
@@ -81,8 +85,16 @@ def genetico(numAlelos, directorio):
     ag = AG.AG(individuos, alelos, tamano_gen, generaciones, factor_mutacion, directorio)
     return ag.run()
 
-def enjambreParticulas():
-    print('In progress...')
+def enjambreParticulas(numDimensiones, directorio):
+    cantidad_individuos = numDimensiones
+    dimensiones = numDimensiones
+    ro = numDimensiones
+    phi1_max=1.7
+    phi2_max=2.0
+    v_max=0.05
+    generaciones=2000
+    pso = PSO.PSO(cantidad_individuos, dimensiones, ro, phi1_max, phi2_max, v_max, directorio, generaciones)
+    return pso.run()
     
 def diferencial(numDimensiones, directorio):
     # :::::::::::::::::::::: Algoritmo Diferencial ::::::::::::::::::::::::::
